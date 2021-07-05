@@ -1,0 +1,14 @@
+SELECT new net.corda.node.services.vault.VaultSchemaV1$SequentialStateEventView(event, state)
+FROM net.corda.node.services.vault.VaultSchemaV1$DbVaultStateEvent event,
+net.corda.node.services.vault.VaultSchemaV1$VaultStates state
+WHERE event.seqNo > :startPositionExclusive
+AND event.seqNo <= :maxPositionInclusive
+AND (:txIds IS NULL OR event.txId IN :txIds)
+AND (:startTimeInstant IS NULL OR event.timestamp >= :startTimeInstant)
+AND (:endTimeInstant IS NULL OR event.timestamp < :endTimeInstant)
+AND (:eventTypes IS NULL OR event.eventType IN :eventTypes)
+AND (:contractStateClassNames IS NULL OR state.contractStateClassName IN :contractStateClassNames)
+AND (:relevancyStatus IS NULL OR state.relevancyStatus = :relevancyStatus)
+AND state.stateRef.txId = event.txId
+AND state.stateRef.index = event.outputIndex
+ORDER BY event.seqNo ASC

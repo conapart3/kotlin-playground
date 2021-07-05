@@ -1,0 +1,3 @@
+FROM net.corda.node.services.vault.VaultSchemaV1$VaultStates v
+WHERE v.stateStatus = :stateStatus
+AND v.stateRef IN :persistentStateRefs

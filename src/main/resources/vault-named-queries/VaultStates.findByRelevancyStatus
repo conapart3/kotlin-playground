@@ -1,0 +1,2 @@
+FROM net.corda.node.services.vault.VaultSchemaV1$VaultStates v
+WHERE v.relevancyStatus = :relevancyStatus
