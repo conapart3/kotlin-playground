@@ -1,1 +1,0 @@
-FROM net.corda.core.schemas.CommonSchemaV1$FungibleState f WHERE f.owner IN :owners

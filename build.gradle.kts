@@ -25,7 +25,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     implementation("com.google.code.gson", "gson", "2.8.6")
 
-    implementation("com.conal", "kotlin-rpc-client", "1.0-SNAPSHOT")
 
 }
 tasks.withType<KotlinCompile>() {

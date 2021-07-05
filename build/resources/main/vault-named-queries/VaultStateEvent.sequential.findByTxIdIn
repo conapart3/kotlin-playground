@@ -1,9 +1,0 @@
-SELECT new net.corda.node.services.vault.VaultSchemaV1$SequentialStateEventView(event, state)
-FROM net.corda.node.services.vault.VaultSchemaV1$DbVaultStateEvent event,
-net.corda.node.services.vault.VaultSchemaV1$VaultStates state
-WHERE event.seqNo > :startPositionExclusive
-AND event.seqNo <= :maxPositionInclusive
-AND event.txId IN :txIds
-AND state.stateRef.txId = event.txId
-AND state.stateRef.index = event.outputIndex
-ORDER BY event.seqNo ASC
