@@ -22,6 +22,10 @@ fun main(){
 
 class Runner4 {
     fun run(){
+
+        testSerializationOfStateAndRef()
+
+
         val message = MessageState("info", "none")
 
         val tstate = TransactionState(message)
@@ -52,6 +56,24 @@ class Runner4 {
 
 
     }
+
+    private fun testSerializationOfStateAndRef() {
+        val message = MessageState("info", "none")
+        val tstate = TransactionState(message)
+        val stateAndRef = StateAndRef(tstate, StateRef("tx1", 2))
+
+        val string = rpcObjectMapper.writeValueAsString(stateAndRef)
+        println(string)
+
+        val pet = PetState("conal", "test1", "some-participants")
+        val tstate2 = TransactionState(pet)
+        val stateAndRef2 = StateAndRef(tstate2, StateRef("tx2", 1))
+
+        val output = rpcObjectMapper.writeValueAsString(stateAndRef2)
+        println(output)
+
+    }
+
     fun <T> List<T?>.firstNonNullOrElseNull(): T? {
         for (item in this) {
             item?.let { return it }
@@ -100,7 +122,7 @@ interface JsonRepresentable {
 internal class StateAndRefSerializer : JsonSerializer<StateAndRef<*>>() {
     override fun serialize(value: StateAndRef<*>, gen: JsonGenerator, serializers: SerializerProvider) {
         gen.writeStartObject()
-
+/*
         val contractState = value.state.data
         if (contractState is JsonRepresentable) {
             gen.writeObjectField("contractState", contractState.toJsonString())
@@ -119,7 +141,19 @@ internal class StateAndRefSerializer : JsonSerializer<StateAndRef<*>>() {
         gen.writeObjectFieldStart("ref")
         gen.writeStringField("txHash", value.ref.txhash.toString())
         gen.writeNumberField("index", value.ref.index)
+*/
 
+        val contractState = value.state.data
+        if(contractState is JsonRepresentable) {
+            gen.writeStringField("state", contractState.toJsonString())
+        } else {
+            gen.writeObjectField("state", contractState)
+        }
+
+        gen.writeStringField("ref", value.ref.toString())
+
+        gen.writeStringField("contract", value.state.contract)
+        gen.writeObject(value.state.notary)
 
         gen.writeEndObject()
     }
