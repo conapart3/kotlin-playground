@@ -1,4 +1,4 @@
-package persistence
+package persistence.example
 
 import java.util.UUID
 import javax.persistence.Column
@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory
 import javax.persistence.Id
 import javax.persistence.Persistence
 import javax.persistence.Table
+import kotlin.concurrent.thread
 
 fun main() {
     ExampleMain().start()
@@ -15,6 +16,15 @@ fun main() {
 class ExampleMain {
     fun start() {
         val emf = Persistence.createEntityManagerFactory("example-unit")
+
+        println("before run: " + Thread.currentThread().name)
+        val t = thread {
+            println("Inside run: " + Thread.currentThread().name)
+            Thread.sleep(1000)
+            println("Finished sleeping ${Thread.currentThread().name}")
+        }
+        t.run()
+        println("after run: " + Thread.currentThread().name)
 
         try {
             val id = UUID.randomUUID().toString()
@@ -66,3 +76,4 @@ class DataEvent {
     @Column(name = "name")
     lateinit var name: String
 }
+

@@ -5,16 +5,47 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 
     <persistence-unit name="example-unit" transaction-type="RESOURCE_LOCAL">
-        <class>persistence.DataEvent</class>
+<!--        <provider>org.hibernate.ejb.HibernatePersistence</provider>-->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>persistence.permissions.model.ChangeAudit</class>
+        <class>persistence.permissions.model.Group</class>
+        <class>persistence.permissions.model.GroupProperty</class>
+        <class>persistence.permissions.model.Permission</class>
+        <class>persistence.permissions.model.Role</class>
+        <class>persistence.permissions.model.User</class>
+        <class>persistence.permissions.model.UserProperty</class>
+        <class>persistence.permissions.model.RolePermissionAssociation</class>
+        <class>persistence.permissions.model.RoleGroupAssociation</class>
+        <class>persistence.permissions.model.RoleUserAssociation</class>
+        <class>persistence.cpx.CpiCpkEntity</class>
+        <class>persistence.cpx.CpiMetadataEntity</class>
+        <class>persistence.cpx.CpkDbChangeLogAuditEntity</class>
+        <class>persistence.cpx.CpkDbChangeLogEntity</class>
+        <class>persistence.cpx.CpkFileEntity</class>
+        <class>persistence.cpx.CpkMetadataEntity</class>
+        <class>liquibasetransactions.entities.ShoppingCart</class>
+        <class>liquibasetransactions.entities.ShoppingUser</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
 <!--        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
         <properties>
-            <property name="javax.persistence.schema-generation.database.action" value="create"/>
-            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"/>
-            <property name="javax.persistence.jdbc.user" value="user"/>
+            <property name="javax.persistence.schema-generation.database.action" value="none"/>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
             <property name="javax.persistence.jdbc.password" value="password"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+<!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
+<!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"/>-->
+<!--            <property name="javax.persistence.jdbc.user" value="user"/>-->
+<!--            <property name="javax.persistence.jdbc.password" value="password"/>-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="validate"/>-->
+<!--            <property name="org.hibernate.sql" value="DEBUG" />-->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.use_sql_comments" value="true" />
+            <property name="javax.persistence.query.timeout" value="1000"/>
+<!--            <property name="log4j.logger.org.hibernate.SQL" value="debug"/>-->
+<!--            <property name="log4j.logger.org.hibernate.type" value="trace"/>-->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
         </properties>
     </persistence-unit>
 

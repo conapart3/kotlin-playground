@@ -10,7 +10,7 @@ import java.util.stream.Stream
 class NonEmptySet<T> private constructor(private val elements: Set<T>) : Set<T> by elements {
     companion object {
         /**
-         * Returns a singleton set containing [element]. This behaves the same as [Collections.singleton] but returns a
+         * Returns a singleton set containing [element]. This behaves the same as [collections.singleton] but returns a
          * [NonEmptySet] for the extra type-safety.
          */
         @JvmStatic
