@@ -49,7 +49,7 @@ fun main() {
     val testId = UUID.randomUUID()
     val cpi = uploadCpi("cpiFileCheck_$testId", "cpkFileCheck_1_$testId")
     val forceUploadedCpi1 = forceUploadDetachedCpiWithNewCpks(cpi, "force-uploaded-cpi-1-$testId")
-    forceUploadDetachedCpiWithNewCpks(forceUploadedCpi1, "force-uploaded-cpi-2-$testId")
+//    forceUploadDetachedCpiWithNewCpks(forceUploadedCpi1, "force-uploaded-cpi-2-$testId")
 //    uploadOriginalCpi()
 
 /*    withEntityManager { em ->

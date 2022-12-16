@@ -24,7 +24,7 @@ data class CpiCpkEntity(
     @Column(name = "cpk_file_name", nullable = false)
     var cpkFileName: String,
     @OneToOne(cascade = [CascadeType.MERGE, CascadeType.PERSIST])
-    @JoinColumn(name = "cpk_file_checksum", referencedColumnName = "file_checksum", insertable = false, updatable = false)
+    @JoinColumn(name = "cpk_file_checksum", referencedColumnName = "file_checksum", insertable = false, updatable = false, unique = true)
     var metadata: CpkMetadataEntity,
     @Version
     @Column(name = "entity_version", nullable = false)

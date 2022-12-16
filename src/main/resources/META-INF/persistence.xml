@@ -23,6 +23,9 @@
         <class>persistence.cpx.CpkDbChangeLogEntity</class>
         <class>persistence.cpx.CpkFileEntity</class>
         <class>persistence.cpx.CpkMetadataEntity</class>
+        <class>persistence.virtualnode.HoldingIdentityEntity</class>
+        <class>persistence.virtualnode.VirtualNodeEntity</class>
+        <class>persistence.virtualnode.VirtualNodeOperationEntity</class>
         <class>liquibasetransactions.entities.ShoppingCart</class>
         <class>liquibasetransactions.entities.ShoppingUser</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
