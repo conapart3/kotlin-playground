@@ -7,6 +7,7 @@ import javax.persistence.Entity
 import javax.persistence.Lob
 import javax.persistence.Table
 import javax.persistence.EntityManager
+import javax.persistence.Id
 import javax.persistence.NamedQuery
 import javax.persistence.Version
 
@@ -40,8 +41,7 @@ const val QUERY_PARAM_ID = "id"
             " AND f.id = :$QUERY_PARAM_ID"
 )
 data class CpkFileEntity(
-    @EmbeddedId
-    val id: CpkKey,
+    @Id
     @Column(name = "file_checksum", nullable = false, unique = true)
     var fileChecksum: String,
     @Lob

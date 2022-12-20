@@ -18,10 +18,15 @@ import org.hibernate.annotations.NaturalId
 @Entity
 @Table(name = "cpk_metadata", schema = "config")
 data class CpkMetadataEntity(
-    @EmbeddedId
-    val id: CpkKey,
+    @Id
     @Column(name = "file_checksum", nullable = false, unique = true)
     var cpkFileChecksum: String,
+    @Column(name = "cpk_name")
+    var cpkName: String,
+    @Column(name = "cpk_version")
+    var cpkVersion: String,
+    @Column(name = "cpk_signer_summary_hash")
+    var cpkSignerSummaryHash: String,
     @Column(name = "format_version", nullable = false)
     var formatVersion: String,
     @Column(name = "metadata", nullable = false)
@@ -31,7 +36,7 @@ data class CpkMetadataEntity(
     @Version
     @Column(name = "entity_version", nullable = false)
     var entityVersion: Int = 0
-): Serializable {
+) {
     /**
      * We'll override to only use the primary key as the default equals causes issues when converting a stream to a list
      */
@@ -39,7 +44,7 @@ data class CpkMetadataEntity(
         if (this === other) return true
         if (other !is CpkMetadataEntity) return false
 
-        if (id != other.id) return false
+        if (cpkFileChecksum != other.cpkFileChecksum) return false
 
         return true
     }
@@ -48,20 +53,6 @@ data class CpkMetadataEntity(
      * We'll override to only use the primary key as the default equals causes issues when converting a stream to a list
      */
     override fun hashCode(): Int {
-        return id.hashCode()
+        return cpkFileChecksum.hashCode()
     }
 }
-
-/**
- * Composite primary key for a Cpk.
- */
-@Embeddable
-data class CpkKey(
-    @Column(name = "cpk_name")
-    var cpkName: String,
-    @Column(name = "cpk_version")
-    var cpkVersion: String,
-    @Column(name = "cpk_signer_summary_hash")
-    var cpkSignerSummaryHash: String,
-) : Serializable
-

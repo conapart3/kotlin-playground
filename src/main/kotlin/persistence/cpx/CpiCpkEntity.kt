@@ -23,8 +23,9 @@ data class CpiCpkEntity(
     val id: CpiCpkKey,
     @Column(name = "cpk_file_name", nullable = false)
     var cpkFileName: String,
+    // note - orphanRemoval = false because a CPK could be associated with a different CPI.
     @OneToOne(cascade = [CascadeType.MERGE, CascadeType.PERSIST])
-    @JoinColumn(name = "cpk_file_checksum", referencedColumnName = "file_checksum", insertable = false, updatable = false, unique = true)
+    @JoinColumn(name = "cpk_file_checksum", referencedColumnName = "file_checksum", insertable = false, updatable = false)
     var metadata: CpkMetadataEntity,
     @Version
     @Column(name = "entity_version", nullable = false)
@@ -44,8 +45,12 @@ data class CpiCpkEntity(
 
 @Embeddable
 data class CpiCpkKey(
-    @Column(name = "cpi_file_checksum")
-    val cpiFileChecksum: String,
+    @Column(name = "cpi_name")
+    val cpiName: String,
+    @Column(name = "cpi_version")
+    val cpiVersion: String,
+    @Column(name = "cpi_signer_summary_hash")
+    val cpiSignerSummaryHash: String,
     @Column(name = "cpk_file_checksum")
-    val cpkFileChecksum: String
+    val cpkFileChecksum: String,
 ): Serializable

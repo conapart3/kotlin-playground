@@ -1,5 +1,6 @@
 package persistence.cpx.dsl
 
+import java.util.ArrayList
 import java.util.UUID
 import persistence.cpx.CpiMetadataEntity
 
@@ -25,6 +26,7 @@ class CpiBuilder(internal val randomId: UUID = UUID.randomUUID()) {
     internal var fileUploadRequestId: String? = null
     internal var fileChecksum: String? = null
     internal var cpks: MutableSet<CpiCpkBuilder> = mutableSetOf()
+    internal var entityVersion: Int? = null
 
     fun name(value: String): CpiBuilder {
         name = value
@@ -66,36 +68,57 @@ class CpiBuilder(internal val randomId: UUID = UUID.randomUUID()) {
         return this
     }
 
+    fun entityVersion(value: Int): CpiBuilder {
+        entityVersion = value
+        return this
+    }
+
     fun cpk(init: CpiCpkBuilder.() -> Unit): CpiBuilder {
-        val cpk = CpiCpkBuilder(::supplyFileChecksum, randomId)
+        val cpk = CpiCpkBuilder(
+            ::supplyCpiName,
+            ::supplyCpiVersion,
+            ::supplyCpiSsh,
+            randomId
+        )
         init(cpk)
         cpks.add(cpk)
         return this
     }
 
     fun cpk(cpkMetadataBuilder: CpkMetadataBuilder, additionalInit: (CpiCpkBuilder.() -> Unit)? = null): CpiBuilder {
-        val cpk = CpiCpkBuilder(cpkMetadataBuilder, ::supplyFileChecksum)
+        val cpk = CpiCpkBuilder(
+            cpkMetadataBuilder,
+            ::supplyCpiName,
+            ::supplyCpiVersion,
+            ::supplyCpiSsh,
+        )
         additionalInit?.let { cpk.additionalInit() }
         cpks.add(cpk)
         return this
     }
 
     fun supplyFileChecksum() = fileChecksum
+    fun supplyCpiName() = name
+    fun supplyCpiVersion() = version
+    fun supplyCpiSsh() = signerSummaryHash
 
     fun build(): CpiMetadataEntity {
         val randomCpkId = "${randomId}_${UUID.randomUUID()}"
+        if (name == null) name = "name_$randomCpkId"
+        if (version == null) version = "version_$randomCpkId"
+        if (signerSummaryHash == null) signerSummaryHash = "signerSummaryHash_$randomCpkId"
         if(fileChecksum == null) fileChecksum = "file_checksum_$randomCpkId"
-        return CpiMetadataEntity.create(
-            name ?: "name_$randomCpkId",
-            version ?: "version_$randomCpkId",
-            signerSummaryHash ?: "ssh_$randomCpkId",
+        return CpiMetadataEntity(
+            name!!,
+            version!!,
+            signerSummaryHash!!,
             fileName ?: "filename_$randomCpkId",
             fileChecksum!!,
             groupPolicy ?: "group_policy_$randomCpkId",
             groupId ?: "group_id_$randomCpkId",
             fileUploadRequestId ?: "upload_req_id_$randomCpkId",
-            cpks.map { it.build() }.toSet()
+            cpks.map { it.build() }.toSet(),
+            entityVersion = entityVersion ?: 0
         )
     }
 }
-

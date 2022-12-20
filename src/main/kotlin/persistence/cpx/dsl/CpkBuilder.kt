@@ -1,10 +1,6 @@
 package persistence.cpx.dsl
 
 import java.util.UUID
-import persistence.cpx.CpiCpkEntity
-import persistence.cpx.CpiCpkKey
-import persistence.cpx.CpiMetadataEntity
-import persistence.cpx.CpkKey
 import persistence.cpx.CpkMetadataEntity
 
 class CpkBuilder(private val randomUUID: UUID = UUID.randomUUID()) {
@@ -47,12 +43,10 @@ class CpkBuilder(private val randomUUID: UUID = UUID.randomUUID()) {
 
     fun build(): CpkMetadataEntity {
         return CpkMetadataEntity(
-            CpkKey(
-                name ?: "name_$randomUUID",
-                version ?: "version_$randomUUID",
-                signerSummaryHash ?: "ssh_$randomUUID",
-            ),
             fileChecksum ?: "file_checksum_$randomUUID",
+            name ?: "name_$randomUUID",
+            version ?: "version_$randomUUID",
+            signerSummaryHash ?: "ssh_$randomUUID",
             formatVersion ?: "2",
             serializedMetadata ?: "serialized_metadata_$randomUUID"
         )

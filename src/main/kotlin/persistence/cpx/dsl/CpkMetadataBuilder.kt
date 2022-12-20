@@ -1,7 +1,6 @@
 package persistence.cpx.dsl
 
 import java.util.UUID
-import persistence.cpx.CpkKey
 import persistence.cpx.CpkMetadataEntity
 
 fun cpk(init: CpkMetadataBuilder.() -> Unit): CpkMetadataBuilder {
@@ -50,12 +49,10 @@ class CpkMetadataBuilder(internal var fileChecksumSupplier: () -> String? = { nu
 
     fun build(): CpkMetadataEntity {
         return CpkMetadataEntity(
-            CpkKey(
-                cpkName ?: "name_$randomId",
-                cpkVersion ?: "version_$randomId",
-                cpkSignerSummaryHash ?: "ssh_$randomId"
-            ),
             fileChecksumSupplier.invoke() ?: "cpk_file_checksum_$randomId",
+            cpkName ?: "name_$randomId",
+            cpkVersion ?: "version_$randomId",
+            cpkSignerSummaryHash ?: "ssh_$randomId",
             formatVersion ?: "format_version_$randomId".take(12),
             serializedMetadata ?: "serialized_metadata_$randomId"
         )

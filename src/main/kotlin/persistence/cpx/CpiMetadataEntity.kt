@@ -56,8 +56,21 @@ data class CpiMetadataEntity(
     var groupId: String,
     @Column(name = "file_upload_request_id", nullable = false)
     var fileUploadRequestId: String,
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "cpi_file_checksum", referencedColumnName = "file_checksum", insertable = false, updatable = false)
+    @OneToMany(
+        fetch = FetchType.EAGER,
+        cascade = [CascadeType.PERSIST, CascadeType.MERGE],
+        orphanRemoval = true
+    )
+    @JoinColumns(
+        JoinColumn(name = "cpi_name", referencedColumnName = "name", insertable = false, updatable = false),
+        JoinColumn(name = "cpi_version", referencedColumnName = "version", insertable = false, updatable = false),
+        JoinColumn(
+            name = "cpi_signer_summary_hash",
+            referencedColumnName = "signer_summary_hash",
+            insertable = false,
+            updatable = false
+        ),
+    )
     val cpks: Set<CpiCpkEntity>,
     // Initial population of this TS is managed on the DB itself
     @Column(name = "insert_ts", insertable = false, updatable = true)
@@ -147,7 +160,7 @@ data class CpiMetadataEntityKey(
     private val signerSummaryHash: String,
 ) : Serializable
 
-fun EntityManager.findAllCpiMetadata(): Stream<CpiMetadataEntity> {
+fun EntityManager.findAllCpiMetadata(): List<CpiMetadataEntity> {
     // Joining the other tables to ensure all data is fetched eagerly
     return createQuery(
         "FROM ${CpiMetadataEntity::class.simpleName} cpi_ " +
@@ -155,5 +168,5 @@ fun EntityManager.findAllCpiMetadata(): Stream<CpiMetadataEntity> {
                 "INNER JOIN FETCH cpk_.metadata cpk_meta_ " +
                 "ORDER BY cpi_.name, cpi_.version, cpi_.signerSummaryHash",
         CpiMetadataEntity::class.java
-    ).resultStream
+    ).resultList
 }

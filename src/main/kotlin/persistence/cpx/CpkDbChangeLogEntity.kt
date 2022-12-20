@@ -2,6 +2,7 @@ package persistence.cpx
 
 import java.io.Serializable
 import java.time.Instant
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.EmbeddedId
@@ -14,14 +15,14 @@ import javax.persistence.Version
  * Representation of a DB ChangeLog (Liquibase) file associated with a CPK.
  */
 @Entity
-@Table(name = "cpk_db_change_log")
+@Table(name = "cpk_db_change_log", schema = "config")
 class CpkDbChangeLogEntity(
     @EmbeddedId
     var id: CpkDbChangeLogKey,
-    @Column(name = "cpk_file_checksum", nullable = false, unique = true)
-    val fileChecksum: String,
     @Column(name = "content", nullable = false)
     val content: String,
+    @Column(name = "changeset_id", nullable = false)
+    val changesetId: UUID
 ) {
     // This structure does not distinguish the root changelogs from changelog include files
     // (or CSVs, which we do not need to support). So, to find the root, you need to look for a filename
@@ -39,46 +40,13 @@ class CpkDbChangeLogEntity(
     val insertTimestamp: Instant? = null
 }
 
-
 /**
  * Composite primary key for a Cpk Change Log Entry.
  */
 @Embeddable
 data class CpkDbChangeLogKey(
-    @Column(name = "cpk_name", nullable = false)
-    var cpkName: String,
-    @Column(name = "cpk_version", nullable = false)
-    var cpkVersion: String,
-    @Column(name = "cpk_signer_summary_hash", nullable = false)
-    var cpkSignerSummaryHash: String,
+    @Column(name = "cpk_file_checksum", nullable = false)
+    var cpkFileChecksum: String,
     @Column(name = "file_path", nullable = false)
     val filePath: String,
 ) : Serializable
-
-
-/*
- * Find all the db changelogs for a CPI
- */
-fun findDbChangeLogForCpi(
-    entityManager: EntityManager,
-    cpiName: String,
-    cpiVersion: String,
-    cpiSSH: String?,
-): List<CpkDbChangeLogEntity> = entityManager.createQuery(
-    "SELECT changelog " +
-            "FROM ${CpkDbChangeLogEntity::class.simpleName} AS changelog INNER JOIN " +
-            "${CpiCpkEntity::class.simpleName} AS cpi " +
-            "ON changelog.id.cpkName = cpi.metadata.id.cpkName AND " +
-            "   changelog.id.cpkVersion = cpi.id.cpkVersion AND " +
-            "   changelog.id.cpkSignerSummaryHash = cpi.id.cpkSignerSummaryHash "+
-            "WHERE cpi.id.cpiName = :name AND "+
-            "      cpi.id.cpiVersion = :version AND "+
-            "      cpi.id.cpiSignerSummaryHash = :signerSummaryHash AND "+
-            "      changelog.isDeleted = FALSE",
-    // TODO - what order should we return?
-    CpkDbChangeLogEntity::class.java
-)
-    .setParameter("name", cpiName)
-    .setParameter("version", cpiVersion)
-    .setParameter("signerSummaryHash", cpiSSH ?: "")
-    .resultList

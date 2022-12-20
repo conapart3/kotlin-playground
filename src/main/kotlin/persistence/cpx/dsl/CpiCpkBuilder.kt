@@ -12,17 +12,35 @@ import persistence.cpx.CpkMetadataEntity
 //    return cpiCpkBuilder
 //}
 
-class CpiCpkBuilder(internal var cpiFileChecksumSupplier: () -> String?, internal val randomId: UUID = UUID.randomUUID()) {
+class CpiCpkBuilder(
+    internal var cpiNameSupplier: () -> String?,
+    internal var cpiVersionSupplier: () -> String?,
+    internal var cpiSshSupplier: () -> String?,
+    internal val randomId: UUID = UUID.randomUUID()
+) {
 
-    constructor(cpk: CpkMetadataBuilder, cpiFileChecksumSupplier: () -> String?) : this(cpiFileChecksumSupplier) {
+    constructor(
+        cpk: CpkMetadataBuilder,
+        cpiNameSupplier: () -> String?,
+        cpiVersionSupplier: () -> String?,
+        cpiSshSupplier: () -> String?,
+    ) : this(cpiNameSupplier, cpiVersionSupplier, cpiSshSupplier) {
         name = cpk.cpkName
         version = cpk.cpkVersion
         signerSummaryHash = cpk.cpkSignerSummaryHash
         formatVersion = cpk.formatVersion
         serializedMetadata = cpk.serializedMetadata
         metadata = cpk
+        cpiName = cpiNameSupplier.invoke()
+        cpiVersion = cpiVersionSupplier.invoke()
+        cpiSsh = cpiSshSupplier.invoke()
         cpkFileChecksum = cpk.fileChecksumSupplier.invoke()
     }
+
+    // cpi
+    internal var cpiName: String? = null
+    internal var cpiVersion: String? = null
+    internal var cpiSsh: String? = null
 
     // cpk
     internal var name: String? = null
@@ -94,7 +112,9 @@ class CpiCpkBuilder(internal var cpiFileChecksumSupplier: () -> String?, interna
 
         return CpiCpkEntity(
             CpiCpkKey(
-                cpiFileChecksumSupplier.invoke() ?: throw Exception("CpiCpkBuilder.cpiFileChecksum is mandatory"),
+                cpiNameSupplier.invoke() ?: throw Exception("CpiCpkBuilder.cpiNameSupplier is mandatory"),
+                cpiVersionSupplier.invoke() ?: throw Exception("CpiCpkBuilder.cpiVersionSupplier is mandatory"),
+                cpiSshSupplier.invoke() ?: throw Exception("CpiCpkBuilder.cpiSshSupplier is mandatory"),
                 supplyCpkFileChecksum()!!
             ),
             fileName ?: "cpk_filename_$randomId",
